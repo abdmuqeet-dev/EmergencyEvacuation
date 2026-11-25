@@ -1,0 +1,24 @@
+{
+  "name": "s4_wheelchair_floor6_directed",
+  "description": "Test scenario 4: same as s3 but responders direct elevator use, so the elevator is legal.",
+  "emergency": "fire",
+  "directed_by_responders": true,
+  "groups": [
+    {
+      "id": "g1",
+      "location": "L6_r612",
+      "mobility_impaired": true,
+      "size": 1
+    }
+  ],
+  "expect": {
+    "outcome": "exit",
+    "uses": [
+      "use-elevator"
+    ],
+    "avoids": [
+      "descend-stairs",
+      "shelter-and-notify"
+    ]
+  }
+}

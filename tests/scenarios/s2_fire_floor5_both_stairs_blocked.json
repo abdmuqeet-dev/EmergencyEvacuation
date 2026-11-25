@@ -1,0 +1,24 @@
+{
+  "name": "s2_fire_floor5_both_stairs_blocked",
+  "description": "Test scenario 2: stairs 2 and 5 both blocked on the 5th floor. Shelter and notify police.",
+  "emergency": "fire",
+  "blocked": [
+    "stair_2_L5",
+    "stair_5_L5"
+  ],
+  "groups": [
+    {
+      "id": "g1",
+      "location": "L5_r510",
+      "mobility_impaired": false,
+      "size": 20
+    }
+  ],
+  "expect": {
+    "outcome": "shelter-and-notify",
+    "avoids": [
+      "exit-building",
+      "use-elevator"
+    ]
+  }
+}

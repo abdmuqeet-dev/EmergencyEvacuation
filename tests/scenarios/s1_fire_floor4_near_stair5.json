@@ -1,0 +1,28 @@
+{
+  "name": "s1_fire_floor4_near_stair5",
+  "description": "Test scenario 1: fire on the 4th floor at stair 5. The group in room 444 must route to stair 2; no elevators.",
+  "emergency": "fire",
+  "hazard_locations": [
+    "L4_c_s_stair",
+    "stair_5_L4"
+  ],
+  "groups": [
+    {
+      "id": "g1",
+      "location": "L4_r444",
+      "mobility_impaired": false,
+      "size": 30
+    }
+  ],
+  "expect": {
+    "outcome": "exit",
+    "uses": [
+      "stair_2_L4"
+    ],
+    "avoids": [
+      "stair_5_L4",
+      "use-elevator"
+    ],
+    "max_cost": 19
+  }
+}

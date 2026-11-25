@@ -1,0 +1,24 @@
+{
+  "name": "s7_earthquake_floor3_glass",
+  "description": "Test scenario 7: earthquake. Wait for shaking to stop, then avoid glass. The glass location is illustrative: real glass corridors are not on the maps (open item).",
+  "emergency": "earthquake",
+  "glass_nodes": [
+    "L3_c_nw_lobby"
+  ],
+  "groups": [
+    {
+      "id": "g1",
+      "location": "L3_r310",
+      "mobility_impaired": false,
+      "size": 20
+    }
+  ],
+  "expect": {
+    "outcome": "exit",
+    "first_action": "wait-for-shaking-to-stop",
+    "avoids": [
+      "L3_c_nw_lobby",
+      "use-elevator"
+    ]
+  }
+}

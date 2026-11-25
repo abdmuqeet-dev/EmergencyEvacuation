@@ -1,0 +1,21 @@
+{
+  "name": "s3_wheelchair_floor6",
+  "description": "Test scenario 3: wheelchair user on the 6th floor, elevators not authorized. Shelter and notify; no stairs, no elevator.",
+  "emergency": "fire",
+  "groups": [
+    {
+      "id": "g1",
+      "location": "L6_r612",
+      "mobility_impaired": true,
+      "size": 1
+    }
+  ],
+  "expect": {
+    "outcome": "shelter-and-notify",
+    "avoids": [
+      "descend-stairs",
+      "use-elevator",
+      "exit-building"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "s8_hazmat_outdoor_release",
+  "description": "Hazmat release outside the building: every exit is blocked, so the group shelters in place.",
+  "emergency": "hazmat",
+  "outdoor_release": true,
+  "groups": [
+    {
+      "id": "g1",
+      "location": "L3_r310",
+      "mobility_impaired": false,
+      "size": 20
+    }
+  ],
+  "expect": {
+    "outcome": "shelter-in-place",
+    "avoids": [
+      "exit-building"
+    ]
+  }
+}

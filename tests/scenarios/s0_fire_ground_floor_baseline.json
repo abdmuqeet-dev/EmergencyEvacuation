@@ -1,0 +1,22 @@
+{
+  "name": "s0_fire_ground_floor_baseline",
+  "description": "Baseline: fire alarm, one group in room 109 on the 1st floor, nothing blocked. Walk out.",
+  "emergency": "fire",
+  "groups": [
+    {
+      "id": "g1",
+      "location": "L1_r109",
+      "mobility_impaired": false,
+      "size": 25
+    }
+  ],
+  "expect": {
+    "outcome": "exit",
+    "avoids": [
+      "use-elevator",
+      "shelter-and-notify",
+      "shelter-in-place"
+    ],
+    "max_cost": 19
+  }
+}

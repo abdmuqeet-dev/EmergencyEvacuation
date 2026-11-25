@@ -1,0 +1,89 @@
+{
+  "name": "s5_crowding_floors3to6",
+  "description": "Test scenario 5: 12 groups on floors 3-6, all closest to stair 2. Each stair segment may carry 2 groups per wave (placeholder capacity, assumption A4), so groups must wait a wave or use stair 5.",
+  "emergency": "fire",
+  "crowding": {
+    "stair_capacity": 2
+  },
+  "groups": [
+    {
+      "id": "g1",
+      "location": "L3_r301",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g2",
+      "location": "L3_r308",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g3",
+      "location": "L3_r310",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g4",
+      "location": "L4_r408",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g5",
+      "location": "L4_r410",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g6",
+      "location": "L4_r483",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g7",
+      "location": "L5_r508",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g8",
+      "location": "L5_r510",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g9",
+      "location": "L5_r505",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g10",
+      "location": "L6_r601",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g11",
+      "location": "L6_r603",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g12",
+      "location": "L6_r608",
+      "mobility_impaired": false,
+      "size": 25
+    }
+  ],
+  "expect": {
+    "outcome": "exit",
+    "avoids": [
+      "shelter-and-notify"
+    ],
+    "min_waits": 1
+  }
+}
