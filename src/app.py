@@ -104,6 +104,9 @@ def sidebar(b):
     if d.get("description"):
         st.sidebar.caption(d["description"])
 
+    d.setdefault("blocked", [])
+    if d["blocked"]:
+        st.sidebar.caption("Blocked from the start: " + ", ".join(b.label(i) for i in d["blocked"]))
     d["emergency"] = st.sidebar.selectbox("Emergency", EMERGENCIES, index=EMERGENCIES.index(d.get("emergency", "fire")))
     d["directed_by_responders"] = st.sidebar.checkbox("Responders authorise elevators", bool(d.get("directed_by_responders")))
     if d["emergency"] == "hazmat":
@@ -293,6 +296,91 @@ def map_panel(sim, view, b):
                "Triangles are stairs, E = elevators, green diamonds = exits to outside.")
 
 
+SETUP_TOOLS = ["Add a group", "Set hazard (fire / smoke / release)", "Block a place", "Remove"]
+GROUP_KINDS = ("room", "restroom", "corridor", "zone")
+HAZARD_KINDS = ("corridor", "zone", "stair", "room", "elevator")
+BLOCK_KINDS = ("corridor", "zone", "stair", "elevator", "exit", "room", "restroom")
+
+
+def _toggle(lst, node):
+    if node in lst:
+        lst.remove(node)
+        return False
+    lst.append(node)
+    return True
+
+
+def apply_setup_click(b, d, tool, node):
+    """Change the scenario draft for one click on the setup map. Returns a message for the user."""
+    kind, name = b.nodes[node]["type"], b.label(node)
+    if tool == SETUP_TOOLS[0]:
+        if kind not in GROUP_KINDS:
+            return "Groups start in a room or corridor, not at %s." % name
+        used = {g["id"] for g in d["groups"]}
+        n = 1
+        while "g%d" % n in used:
+            n += 1
+        ss = st.session_state
+        d["groups"].append({"id": "g%d" % n, "location": node, "mobility_impaired": bool(ss.get("setup_mob")),
+                            "size": int(ss.get("setup_size", 20))})
+        return "Added group g%d at %s." % (n, name)
+    if tool == SETUP_TOOLS[1]:
+        if kind not in HAZARD_KINDS:
+            return "The hazard can't be placed at %s." % name
+        hz = d.setdefault("hazard_locations", [])
+        on = _toggle(hz, node)
+        return "%s the hazard at %s." % ("Set" if on else "Cleared", name)
+    if tool == SETUP_TOOLS[2]:
+        if kind not in BLOCK_KINDS:
+            return "%s can't be blocked." % name
+        on = _toggle(d.setdefault("blocked", []), node)
+        return "%s %s." % ("Blocked" if on else "Unblocked", name)
+    here = [g for g in d["groups"] if g["location"] == node]
+    out = []
+    if here:
+        d["groups"].remove(here[-1])
+        out.append("group %s" % here[-1]["id"])
+    for key, what in (("hazard_locations", "hazard"), ("blocked", "block")):
+        if node in d.get(key, []):
+            d[key].remove(node)
+            out.append(what)
+    return ("Removed %s at %s." % (" and ".join(out), name)) if out else "Nothing to remove at %s." % name
+
+
+def setup_panel(b):
+    """Scenario setup on the map: pick a tool, click places. Runs while no simulation exists."""
+    ss = st.session_state
+    d = ss.draft
+    ss.setdefault("setup_floor", "L3")
+    ss.setdefault("setup_nonce", 0)
+    ss.setdefault("setup_msg", "")
+    ss.setdefault("setup_tool", SETUP_TOOLS[0])
+    st.markdown("**Set up the scenario on the map**")
+    c = st.columns([3.2, 1.1, 1.1])
+    c[0].radio("Click does", SETUP_TOOLS, horizontal=True, key="setup_tool")
+    c[1].checkbox("Wheelchair", key="setup_mob", help="New groups cannot use stairs")
+    c[2].number_input("People", 1, 200, 20, key="setup_size")
+    counts = {f: sum(1 for g in d["groups"] if b.floor(g["location"]) == f) for f in FLOORS}
+    st.radio("Floor", FLOORS, horizontal=True, key="setup_floor",
+             format_func=lambda f: "%s%s" % (FLOOR_TAG[f], " (%d)" % counts[f] if counts[f] else ""))
+    floor = ss.setup_floor
+    gm = [{"id": g["id"], "location": g["location"], "status": "walking", "color": mapview.group_color(k),
+           "trail": [], "route": []} for k, g in enumerate(d["groups"])]
+    shown_blocked = set(d.get("blocked", [])) | set(d.get("hazard_locations", []))
+    fig = mapview.floor_figure(floor, b, blocked=shown_blocked, groups=gm, height=800 if ss.presenter else 720)
+    event = st.plotly_chart(fig, key="setup_%s_%d" % (floor, ss.setup_nonce), on_select="rerun",
+                            selection_mode="points", width="stretch", config={"displaylogo": False, "scrollZoom": True})
+    sel = mapview.picked_nodes(getattr(event, "selection", None) or {}, floor, b)
+    if sel:
+        ss.setup_msg = " ".join(apply_setup_click(b, d, ss.setup_tool, n) for n in sel)
+        ss.setup_nonce += 1            # a fresh chart has no selection, so the same place can be clicked again
+        st.rerun()
+    if ss.setup_msg:
+        st.info(ss.setup_msg)
+    st.caption("Circles are groups, red crosses are blocked places or the hazard, triangles are stairs, E = elevators, "
+               "green diamonds = exits. Scroll to zoom, drag to pan. Press Start in the sidebar when it looks right.")
+
+
 def groups_panel(sim, view, b, live):
     st.markdown("**Groups**")
     for k, (gid, g) in enumerate(view["groups"].items()):
@@ -350,10 +438,11 @@ def main():
     head[1].toggle("Presenter mode", key="presenter", help="Hide the sidebar and enlarge everything for a projector")
     sim = ss.sim
     if sim is None:
-        st.write("Choose a scenario in the sidebar, adjust it if you like, and press **Start**. "
+        st.write("Choose a scenario in the sidebar, or build one by clicking the map below, then press **Start**. "
                  "Routes come from an automated planner, and every plan is verified by an independent validator.")
-        st.info("Tip: after starting, press **Play** to watch groups walk, then block a stair or corridor on the route "
-                "and watch the plan change. Drag the timeline to replay.")
+        setup_panel(b)
+        st.caption("Tip: after starting, press Play to watch groups walk, then block a stair or corridor on the route "
+                   "and watch the plan change. Drag the timeline to replay.")
         return
     n = len(sim.frames)
     if ss.follow or ss.tl > n - 1:               # watching live: always show the newest frame
