@@ -1,0 +1,8 @@
+(define (problem toy-1)
+  (:domain toy-evac)
+  (:objects room corridor lobby door - location g1 - group)
+  (:init (at g1 room) (exit door)
+         (connected room corridor) (connected corridor room)
+         (connected corridor lobby) (connected lobby corridor)
+         (connected lobby door) (connected door lobby))
+  (:goal (evacuated g1)))

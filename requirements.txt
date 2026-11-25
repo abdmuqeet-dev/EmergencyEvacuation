@@ -1,0 +1,6 @@
+up-fast-downward==1.0.0
+streamlit>=1.50
+plotly>=6
+# optional, only for tools/preview_layout.py and tools/e2e_check.py:
+# kaleido
+# playwright

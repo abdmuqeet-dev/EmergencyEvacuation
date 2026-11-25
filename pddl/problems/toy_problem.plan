@@ -1,0 +1,5 @@
+(move g1 room corridor)
+(move g1 corridor lobby)
+(move g1 lobby door)
+(exit-building g1 door)
+; cost = 4 (unit cost)
