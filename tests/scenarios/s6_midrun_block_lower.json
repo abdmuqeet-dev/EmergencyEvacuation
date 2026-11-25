@@ -1,0 +1,34 @@
+{
+  "name": "s6_midrun_block_lower",
+  "description": "Test scenario 6: Lower floor. A group in room 62 heads for the nearest exit; after the first step a corridor on its route becomes blocked and the plan updates.",
+  "emergency": "fire",
+  "groups": [
+    {
+      "id": "g1",
+      "location": "L0_r62",
+      "mobility_impaired": false,
+      "size": 20
+    }
+  ],
+  "script": [
+    {
+      "after_step": 2,
+      "block": [
+        "L0_c_c_n"
+      ],
+      "note": "north corridor end (the way to the north exit) becomes impassable while the group is on the east branch"
+    }
+  ],
+  "expect": {
+    "outcome": "exit",
+    "min_replans": 1,
+    "uses": [
+      "exit_L0_S6"
+    ],
+    "avoids": [
+      "L0_c_c_n",
+      "exit_L0_N",
+      "use-elevator"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "s6b_unblock_after_shelter",
+  "description": "Test scenario 6b: 5th floor. Both stairs are blocked before anyone moves, so the group shelters and notifies. Later stair 2 reopens and the sheltering group re-plans and walks out.",
+  "emergency": "fire",
+  "groups": [{"id": "g1", "location": "L5_r510", "mobility_impaired": false, "size": 20}],
+  "script": [
+    {"after_step": 0, "block": ["stair_2_L5", "stair_5_L5"], "note": "both stairs blocked at the start"},
+    {"after_step": 99, "unblock": ["stair_2_L5"], "note": "once the group is sheltering, stair 2 reopens"}
+  ],
+  "expect": {"outcome": "exit", "allow": ["shelter-and-notify"], "min_replans": 2, "uses": ["shelter-and-notify", "stair_2_L4"]}
+}

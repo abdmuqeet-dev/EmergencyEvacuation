@@ -1,0 +1,54 @@
+{
+  "name": "s6c_crowded_midrun_block",
+  "description": "Test scenario 6c: four groups on floors 3-4 with a stair limit of 2 per wave. After the first wave, stair 2 on level 2 is blocked. Groups g1 and g2 are already below it and carry on; g3 and g4 are still above it and re-plan through stair 5, sharing its slots.",
+  "emergency": "fire",
+  "crowding": {
+    "stair_capacity": 2
+  },
+  "groups": [
+    {
+      "id": "g1",
+      "location": "L3_r301",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g2",
+      "location": "L3_r308",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g3",
+      "location": "L3_r310",
+      "mobility_impaired": false,
+      "size": 25
+    },
+    {
+      "id": "g4",
+      "location": "L4_r408",
+      "mobility_impaired": false,
+      "size": 25
+    }
+  ],
+  "script": [
+    {
+      "after_step": 1,
+      "block": [
+        "stair_2_L2"
+      ],
+      "note": "stair 2 blocked on the 2nd floor after the first wave"
+    }
+  ],
+  "expect": {
+    "outcome": "exit",
+    "min_replans": 1,
+    "uses": [
+      "stair_5_L3"
+    ],
+    "avoids": [
+      "use-elevator",
+      "shelter-and-notify"
+    ]
+  }
+}
